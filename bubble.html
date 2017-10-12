@@ -1,0 +1,134 @@
+<html>
+<body>
+<script>
+	
+	const WIDTH = 500;
+	const HEIGHT = 500;
+	
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d');
+	
+	canvas.width = WIDTH;
+	canvas.height = HEIGHT;
+	canvas.style.border = '1px solid black';
+	document.body.append(canvas);
+	
+	var bubbles = [];
+	var point;
+	
+	function init(){
+		bubbles.push(new Bubble(WIDTH/2, HEIGHT));
+		point = new Pointer(WIDTH/2, HEIGHT);
+	}
+	
+	function update(){
+	
+		bubbles.push(new Bubble(point.x, point.y));
+	
+		for(var i = 0; i < bubbles.length; i++){
+			bubbles[i].update();
+			
+			if(bubbles[i].done()){
+				bubbles.splice(i, 1);
+				i--;
+			}
+		}
+	}
+	
+	function getMousePos(canvas, evt) {
+		var rect = canvas.getBoundingClientRect();
+		return {
+		  x: evt.clientX - rect.left,
+		  y: evt.clientY - rect.top
+		};
+	}
+	
+	 canvas.addEventListener('mousemove', function(evt) {
+        var mousePos = getMousePos(canvas, evt);
+        
+		point.x = mousePos.x;
+		point.y = mousePos.y;
+		
+      }, false);
+		
+	
+	function render(){
+		context.clearRect(0, 0, WIDTH, HEIGHT);
+		for(var i = 0; i < bubbles.length; i++){
+			bubbles[i].render();
+		}
+	}
+	
+	init();
+	setInterval(function(){
+		update();
+		render();
+	}, 30/1000);
+	
+	function Pointer(x, y){
+		this.x = x;
+		this.y = y;
+	}
+	
+	
+	function Bubble(x, y){
+		this.x = x;
+		this.y = y;
+		this.vx = Math.random() - 0.4;
+		this.vy = Math.random() + 0.5;
+		this.size = 2;
+		this.acc = 0.01;
+		this.lifespan = 200;
+		
+		const COLORS = ['blue', 'red', 'yellow', 'green', 'orange'];
+		
+		this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+		
+		this.done = function(){
+			return this.lifespan < 0;
+		}
+		
+		this.update = function(){
+			this.vy += this.acc;
+			this.y -= this.vy;
+			this.x += this.vx;
+			this.lifespan--;
+		}
+		
+		this.render = function(){
+			context.beginPath();
+			context.arc(this.x, this.y, this.size, 0, 2*Math.PI);
+			context.fillStyle = this.color;
+			context.fill();
+		}
+		
+		
+		
+		
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+</script>
+</body>
+</html>
